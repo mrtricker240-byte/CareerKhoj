@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareerKhoj | Discover Your Future</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f5f7ff;color:#172554;line-height:1.6}
+header{background:white;padding:18px 6%;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;box-shadow:0 3px 15px #0000000a}
+.logo{font-size:25px;font-weight:bold;color:#4f46e5}
+nav{display:flex;gap:15px;flex-wrap:wrap}
+nav a{color:#334155;text-decoration:none;font-size:14px;font-weight:bold}
+.hero{text-align:center;padding:60px 20px;background:linear-gradient(135deg,#e0e7ff,#f5f3ff)}
+.hero h1{font-size:clamp(34px,5vw,49px);line-height:1.2;margin-bottom:18px}
+.hero h1 span{color:#4f46e5}
+.hero p{max-width:650px;margin:auto;color:#64748b}
+.container{width:min(950px,92%);margin:38px auto}
+.panel,.quiz-card,.result-card{background:white;border-radius:18px;padding:26px;box-shadow:0 8px 35px #1725540c;margin-bottom:25px}
+.subtitle,.section-subtitle{color:#64748b;margin:8px 0 22px}
+.section-title{font-size:27px;margin-bottom:5px}
+.progress-info{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px}
+.progress-track{height:8px;background:#e2e8f0;border-radius:20px;overflow:hidden;margin-bottom:25px}
+.progress-bar{height:100%;width:0;background:#4f46e5;transition:width .25s}
+#question{font-size:21px;margin-bottom:18px}
+.options{display:grid;gap:11px}
+.option{width:100%;text-align:left;padding:14px;border:2px solid #e2e8f0;background:white;border-radius:12px;cursor:pointer;color:#172554;font-size:15px}
+.option:hover,.option.selected{border-color:#4f46e5;background:#eef2ff}
+.controls{display:flex;justify-content:space-between;gap:12px;margin-top:24px}
+.btn{border:none;border-radius:10px;padding:12px 17px;background:#4f46e5;color:white;font-weight:bold;cursor:pointer;font-size:14px}
+.btn:hover{background:#3730a3}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.secondary{background:#e2e8f0;color:#172554}
+.hidden{display:none!important}
+.notice{background:#eef2ff;padding:15px;border-radius:12px;margin:18px 0;color:#3730a3;font-size:14px}
+.career-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
+.career{border:1px solid #e2e8f0;border-radius:14px;padding:18px;background:white}
+.career h3{margin-bottom:8px}
+.career p{color:#64748b;font-size:14px;margin-bottom:10px}
+.career small{display:block;color:#475569;margin-top:9px}
+.career .btn{margin-top:12px}
+.roadmap-step{padding:15px;margin:12px 0;border-left:4px solid #4f46e5;border-radius:8px;background:#f8faff}
+.roadmap-step p{color:#475569;font-size:14px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+label{display:block;font-weight:bold;margin-bottom:6px;font-size:14px}
+select{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;background:white;color:#172554}
+.table-wrap{overflow-x:auto;margin-top:18px}
+table{width:100%;min-width:500px;border-collapse:collapse}
+th,td{text-align:left;padding:12px;border-bottom:1px solid #e2e8f0;font-size:14px}
+th{background:#eef2ff}
+footer{margin-top:50px;padding:28px 15px;background:#172554;color:white;text-align:center}
+footer p{font-size:14px;margin-top:5px}
+
+/* FLOATING CHATBOT */
+.chat-launcher{position:fixed;right:22px;bottom:22px;width:62px;height:62px;border:none;border-radius:50%;background:#4f46e5;color:white;font-size:27px;cursor:pointer;box-shadow:0 6px 25px #17255435;z-index:1000}
+.chat-window{position:fixed;right:22px;bottom:96px;width:min(370px,calc(100vw - 28px));height:min(510px,calc(100dvh - 125px));background:white;border-radius:18px;box-shadow:0 10px 45px #17255430;display:flex;flex-direction:column;overflow:hidden;z-index:1000;border:1px solid #e2e8f0}
+.chat-header{background:#4f46e5;color:white;padding:15px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.chat-header h3{font-size:17px}
+.chat-header p{font-size:12px}
+.chat-close{background:transparent;border:none;color:white;font-size:25px;cursor:pointer}
+.chat-messages{flex:1;overflow-y:auto;padding:15px;background:#f8faff;display:flex;flex-direction:column;gap:12px}
+.chat-message{max-width:90%;padding:11px 13px;border-radius:13px;font-size:14px;overflow-wrap:anywhere;white-space:pre-wrap}
+.chat-message.bot{background:white;border:1px solid #e2e8f0;align-self:flex-start;border-bottom-left-radius:3px}
+.chat-message.user{background:#4f46e5;color:white;align-self:flex-end;border-bottom-right-radius:3px}
+.chat-suggestions{display:flex;flex-wrap:wrap;gap:7px;padding:10px 12px;background:white}
+.chat-suggestions button{background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;border-radius:18px;padding:7px 10px;font-size:12px;cursor:pointer}
+.chat-form{display:flex;gap:8px;padding:12px;border-top:1px solid #e2e8f0;background:white}
+.chat-form input{flex:1;min-width:0;padding:11px;border:1px solid #cbd5e1;border-radius:10px;outline:none;font-size:14px}
+.chat-form button{border:none;border-radius:10px;padding:0 14px;background:#4f46e5;color:white;cursor:pointer;font-weight:bold}
+.chat-disclaimer{font-size:10px;color:#64748b;text-align:center;padding:0 10px 8px}
+@media(max-width:550px){
+header{padding:16px 5%}
+nav{gap:10px}
+nav a{font-size:12px}
+.panel,.quiz-card,.result-card{padding:20px 16px}
+.form-row{grid-template-columns:1fr}
+.chat-launcher{right:15px;bottom:15px}
+.chat-window{right:14px;bottom:87px}
+}
+</style>
+</head>
+
+<body>
+<header>
+    <div class="logo">CareerKhoj.</div>
+    <nav>
+        <a href="#quiz">Career Quiz</a>
+        <a href="#roadmaps">Roadmaps</a>
+        <a href="#comparison">Compare Careers</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <h1>Your Future.<br><span>Your Choice.</span></h1>
+    <p>Explore careers, discover your interests, compare career paths and plan your next step.</p>
+</section>
+
+<main class="container">
+
+<section id="quiz">
+    <div class="quiz-card" id="quizCard">
+        <h2>🎯 Discover Your Career</h2>
+        <p class="subtitle">Answer six questions to explore career possibilities.</p>
+        <div class="progress-info">
+            <span id="stepText">Question 1 of 6</span>
+            <span id="progressPercent">17%</span>
+        </div>
+        <div class="progress-track" id="progressTrack" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="17">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <h3 id="question"></h3>
+        <div class="options" id="options"></div>
+        <div class="controls">
+            <button class="btn secondary" id="backBtn" onclick="previousQuestion()" disabled>← Back</button>
+            <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>Next →</button>
+        </div>
+        <p id="quizError" role="status" style="color:#b91c1c;margin-top:12px"></p>
+    </div>
+
+    <div class="result-card hidden" id="resultCard" aria-live="polite">
+        <h2>Your Career Exploration Results 🎯</h2>
+        <div class="notice">These are preliminary suggestions, not a scientific assessment or a prediction of success. Verify eligibility and requirements before making decisions.</div>
+        <div class="career-grid" id="results"></div>
+        <button class="btn" onclick="restartQuiz()" style="margin-top:20px">Retake Quiz ↻</button>
+    </div>
+</section>
+
+<section id="roadmaps" class="panel">
+    <h2 class="section-title">🗺️ Career Roadmap</h2>
+    <p class="section-subtitle">Explore education requirements and possible steps for different careers.</p>
+    <label for="roadmapCareer">Choose a career</label>
+    <select id="roadmapCareer">
+        <option value="army">Defence Services Officer</option>
+        <option value="law">Lawyer</option>
+        <option value="technology">Software Developer</option>
+        <option value="data">Data Analyst</option>
+        <option value="business">Business and Finance</option>
+        <option value="healthcare">Healthcare Professional</option>
+        <option value="publicservice">Public Service</option>
+        <option value="design">Design and Digital Media</option>
+    </select>
+    <div id="roadmapContent"></div>
+</section>
+
+<section id="comparison" class="panel">
+    <h2 class="section-title">💰 Salary & Career Comparison</h2>
+    <p class="section-subtitle">Compare qualifications, pathways and indicative earning ranges.</p>
+    <div class="notice">Salary figures are broad illustrative estimates, not verified current quotations or guaranteed earnings. Actual pay depends on role, experience, location and employer.</div>
+    <div class="form-row">
+        <div>
+            <label for="careerOne">First career</label>
+            <select id="careerOne"></select>
+        </div>
+        <div>
+            <label for="careerTwo">Second career</label>
+            <select id="careerTwo"></select>
+        </div>
+    </div>
+    <button class="btn" onclick="compareCareers()">Compare Careers</button>
+    <div class="table-wrap" id="comparisonOutput" aria-live="polite"></div>
+</section>
+</main>
+
+<!-- CHATBOT BUTTON -->
+<button class="chat-launcher" id="chatLauncher" type="button" aria-label="Open CareerKhoj chat" aria-expanded="false" onclick="toggleChat()">💬</button>
+
+<!-- CHATBOT WINDOW -->
+<section class="chat-window hidden" id="chatWindow" aria-label="CareerKhoj Career Assistant">
+    <div class="chat-header">
+        <div>
+            <h3>🎓 CareerKhoj Assistant</h3>
+            <p>Ask about your future</p>
+        </div>
+        <button class="chat-close" type="button" aria-label="Close chat" onclick="toggleChat(false)">×</button>
+    </div>
+
+    <div class="chat-messages" id="chatMessages" aria-live="polite">
+        <div class="chat-message bot">Hey! 👋 Welcome to CareerKhoj.
+
+Ask me about Army, Law, coding, salaries or career roadmaps.
+
+Aap Hindi ya English mein pooch sakte ho!</div>
+    </div>
+
+    <div class="chat-suggestions">
+        <button type="button" onclick="askSuggestion('Army career roadmap')">🪖 Army</button>
+        <button type="button" onclick="askSuggestion('Law career roadmap')">⚖️ Law</button>
+        <button type="button" onclick="askSuggestion('How can I learn coding?')">💻 Coding</button>
+        <button type="button" onclick="askSuggestion('Compare careers')">📊 Compare</button>
+    </div>
+
+    <form class="chat-form" id="chatForm">
+        <input id="chatInput" type="text" placeholder="Ask about your future..." maxlength="500" autocomplete="off" aria-label="Type your question" required>
+        <button type="submit">Send</button>
+    </form>
+    <p class="chat-disclaimer">Basic automated guidance • Verify important details</p>
+</section>
+
+<footer>
+    <strong>CareerKhoj</strong>
+    <p>Helping students explore possibilities and make informed choices.</p>
+    <p>© 2026 CareerKhoj</p>
+</footer>
+
+<script>
+const questions=[
+{question:"Which class or education level are you in?",options:[{text:"Class 9–10",value:"school"},{text:"Class 11–12",value:"senior"},{text:"College",value:"college"}]},
+{question:"Which subjects interest you the most?",options:[{text:"Mathematics and logical problems",value:"math"},{text:"Biology and healthcare",value:"biology"},{text:"Business, accounts and economics",value:"business"},{text:"History, society and politics",value:"humanities"},{text:"Computers and technology",value:"technology"}]},
+{question:"What kind of work sounds interesting?",options:[{text:"Solving technical problems",value:"technical"},{text:"Helping and protecting people",value:"service"},{text:"Debating and understanding laws",value:"law"},{text:"Managing money and businesses",value:"business"},{text:"Creating designs or content",value:"creative"}]},
+{question:"Which work environment appeals to you?",options:[{text:"Disciplined and structured",value:"structured"},{text:"Courtroom or legal office",value:"legal"},{text:"Technology company or lab",value:"techwork"},{text:"Business or corporate office",value:"corporate"},{text:"Different environments; still exploring",value:"flexible"}]},
+{question:"What is your main priority?",options:[{text:"Financial stability",value:"stability"},{text:"Serving society",value:"service"},{text:"Independence and entrepreneurship",value:"independence"},{text:"Intellectual challenge",value:"challenge"},{text:"Work-life flexibility",value:"flexibility"}]},
+{question:"Which pathway would you prefer?",options:[{text:"Competitive exams and structured selection",value:"exam"},{text:"University degree and specialization",value:"degree"},{text:"Practical skills and projects",value:"skills"},{text:"Business and professional experience",value:"businesspath"},{text:"I need to explore more first",value:"explore"}]}
+];
+
+const careers={
+army:{title:"Defence Services Officer",description:"Explore military leadership, national service and disciplined work.",tags:["service","structured","exam","stability"],details:"Officer entry requires meeting route-specific age, education, medical and selection requirements.",education:"Entry route dependent: eligible Class 12 students or graduates may have different options.",route:"Check an entry notification → prepare for its selection stages → meet medical and training requirements.",time:"Varies by entry route.",salary:"Pay depends on rank, service rules and applicable allowances.",salaryNote:"Verify the current pay details in official recruitment information.",official:"https://www.joinindianarmy.nic.in/"},
+law:{title:"Lawyer",description:"Explore legal reasoning, advocacy, research and different areas of law.",tags:["law","legal","humanities","degree","challenge"],details:"A five-year integrated law degree after Class 12 is a common route.",education:"Usually a 5-year integrated law degree after Class 12.",route:"Check eligible entrance exams → complete a recognised law degree → fulfil applicable professional requirements.",time:"Typically 5 years for an integrated degree, followed by any required professional steps.",salary:"Earnings vary widely; some salaried entry-level roles may pay roughly ₹2–8 lakh/year.",salaryNote:"This is a broad illustrative range, not a verified current salary survey. Independent practice income is unpredictable.",official:"https://www.allindiabarexamination.com/"},
+technology:{title:"Software Developer",description:"Build websites and apps and solve technical problems.",tags:["math","technology","technical","techwork","skills","challenge"],details:"Learn programming fundamentals and build projects.",education:"Relevant degree or an alternative skills-based route.",route:"Learn HTML, CSS and JavaScript → build projects → create a portfolio → explore internships or junior jobs.",time:"Learning varies; a relevant degree often takes 3–4 years.",salary:"Illustrative early-career range: ₹3–10 lakh/year.",salaryNote:"Actual salaries vary substantially with skills, employer, role and location.",official:"https://www.ncs.gov.in/"},
+data:{title:"Data Analyst",description:"Use maths, statistics and data tools to answer questions.",tags:["math","business","technical","techwork","challenge"],details:"Spreadsheets, SQL, statistics and data visualisation are useful skills.",education:"Relevant degree or credible training and demonstrable skills.",route:"Learn spreadsheets and statistics → SQL → visualisation → build portfolio projects.",time:"A degree may take 3–4 years; skills can be learned alongside study.",salary:"Illustrative early-career range: ₹3–8 lakh/year.",salaryNote:"Actual pay depends on skills, role and employer.",official:"https://www.ncs.gov.in/"},
+business:{title:"Business and Finance",description:"Explore accounting, finance, management and entrepreneurship.",tags:["business","corporate","independence","businesspath","stability"],details:"Possible routes include degrees, professional qualifications and practical experience.",education:"Depends on the chosen specialisation.",route:"Choose an area → learn its requirements → obtain relevant education → gain experience.",time:"Undergraduate degrees often take 3–4 years; professional qualifications vary.",salary:"Highly role-dependent; no single reliable range applies to all business careers.",salaryNote:"Entrepreneurial income is not guaranteed.",official:"https://www.ncs.gov.in/"},
+healthcare:{title:"Healthcare Professional",description:"Explore medicine, nursing, pharmacy and allied healthcare.",tags:["biology","service","degree"],details:"Requirements depend on the profession and its regulator.",education:"Profession-specific approved qualification.",route:"Choose a profession → check eligibility → complete required training and registration.",time:"Varies substantially by profession.",salary:"Varies widely by qualification, profession and employer.",salaryNote:"Compare the exact profession before relying on salary estimates.",official:"https://www.nmc.org.in/"},
+publicservice:{title:"Public Service",description:"Explore government recruitment and public administration.",tags:["humanities","service","exam","structured"],details:"Eligibility and selection stages depend on the specific post.",education:"Role-specific; many graduate-level exams require a degree.",route:"Choose a service → read its official notification → verify eligibility → prepare for selection.",time:"Depends on the required education and recruitment cycle.",salary:"Depends on the post and applicable pay rules.",salaryNote:"There is no single salary for all government jobs.",official:"https://upsc.gov.in/"},
+design:{title:"Design and Digital Media",description:"Explore graphic design, user experience, animation and content.",tags:["creative","flexibility","flexible","skills"],details:"A portfolio helps demonstrate practical ability.",education:"Relevant course, degree or skills-based route, depending on the role.",route:"Choose a design area → practise tools → build a portfolio → seek projects or entry-level roles.",time:"Varies by course and individual learning.",salary:"Illustrative early-career range: ₹2–6 lakh/year for some salaried roles.",salaryNote:"Freelance income can fluctuate and is not guaranteed.",official:"https://www.ncs.gov.in/"}
+};
+
+let currentQuestion=0;
+let answers=[];
+
+function renderQuestion(){
+ const q=questions[currentQuestion];
+ document.getElementById("question").textContent=q.question;
+ document.getElementById("stepText").textContent=`Question ${currentQuestion+1} of ${questions.length}`;
+ const percent=Math.round((currentQuestion+1)/questions.length*100);
+ document.getElementById("progressPercent").textContent=percent+"%";
+ document.getElementById("progressBar").style.width=percent+"%";
+ document.getElementById("progressTrack").setAttribute("aria-valuenow",percent);
+ const box=document.getElementById("options");
+ box.replaceChildren();
+ q.options.forEach(option=>{
+  const button=document.createElement("button");
+  button.type="button";
+  button.className="option";
+  button.textContent=option.text;
+  if(answers[currentQuestion]===option.value)button.classList.add("selected");
+  button.onclick=()=>{answers[currentQuestion]=option.value;renderQuestion()};
+  box.appendChild(button);
+ });
+ document.getElementById("backBtn").disabled=currentQuestion===0;
+ document.getElementById("nextBtn").disabled=!answers[currentQuestion];
+ document.getElementById("nextBtn").textContent=currentQuestion===questions.length-1?"See Results →":"Next →";
+ document.getElementById("quizError").textContent="";
+}
+
+function nextQuestion(){
+ if(!answers[currentQuestion])return;
+ if(currentQuestion<questions.length-1){currentQuestion++;renderQuestion()}
+ else showResults();
+}
+
+function previousQuestion(){
+ if(currentQuestion>0){currentQuestion--;renderQuestion()}
+}
+
+function showResults(){
+ const scores={};
+ Object.entries(careers).forEach(([key,career])=>{
+  scores[key]=answers.filter(answer=>career.tags.includes(answer)).length;
+ });
+ const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+ const box=document.getElementById("results");
+ box.replaceChildren();
+ sorted.slice(0,3).forEach(([key])=>{
+  const career=careers[key];
+  const card=document.createElement("article");
+  card.className="career";
+  const title=document.createElement("h3");
+  title.textContent=career.title;
+  const description=document.createElement("p");
+  description.textContent=career.description;
+  const details=document.createElement("small");
+  details.textContent=career.details;
+  const button=document.createElement("button");
+  button.className="btn";
+  button.textContent="View Roadmap";
+  button.onclick=()=>{
+   document.getElementById("roadmapCareer").value=key;
+   renderRoadmap();
+   document.getElementById("roadmaps").scrollIntoView({behavior:"smooth"});
+  };
+  card.append(title,description,details,button);
+  box.appendChild(card);
+ });
+ document.getElementById("quizCard").classList.add("hidden");
+ document.getElementById("resultCard").classList.remove("hidden");
+ document.getElementById("resultCard").scrollIntoView({behavior:"smooth"});
+}
+
+function restartQuiz(){
+ currentQuestion=0;answers=[];
+ document.getElementById("resultCard").classList.add("hidden");
+ document.getElementById("quizCard").classList.remove("hidden");
+ renderQuestion();
+ document.getElementById("quiz").scrollIntoView({behavior:"smooth"});
+}
+
+function renderRoadmap(){
+ const key=document.getElementById("roadmapCareer").value;
+ const c=careers[key];
+ const box=document.getElementById("roadmapContent");
+ box.replaceChildren();
+ const title=document.createElement("h3");
+ title.style.marginTop="20px";
+ title.textContent=c.title;
+ box.appendChild(title);
+ const steps=[
+ ["Step 1: Understand the career",c.description],
+ ["Step 2: Education",c.education],
+ ["Step 3: Route",c.route],
+ ["Step 4: Time needed",c.time],
+ ["Step 5: Verify requirements","Read current official notices before making application or education decisions."]
+ ];
+ steps.forEach(([heading,detail])=>{
+  const div=document.createElement("div");
+  div.className="roadmap-step";
+  const h=document.createElement("h4");h.textContent=heading;
+  const p=document.createElement("p");p.textContent=detail;
+  div.append(h,p);box.appendChild(div);
+ });
+ const link=document.createElement("a");
+ link.href=c.official;link.target="_blank";link.rel="noopener noreferrer";
+ link.textContent="Visit official information source ↗";
+ link.style.display="inline-block";link.style.marginTop="12px";link.style.color="#4338ca";
+ box.appendChild(link);
+}
+
+function fillCareerSelect(id,selected){
+ const select=document.getElementById(id);
+ Object.entries(careers).forEach(([key,c])=>{
+  const option=document.createElement("option");
+  option.value=key;option.textContent=c.title;
+  if(key===selected)option.selected=true;
+  select.appendChild(option);
+ });
+}
+
+function compareCareers(){
+ const keys=[...new Set([
+  document.getElementById("careerOne").value,
+  document.getElementById("careerTwo").value
+ ])];
+ const output=document.getElementById("comparisonOutput");
+ output.replaceChildren();
+ const table=document.createElement("table");
+ const head=document.createElement("thead");
+ const row=document.createElement("tr");
+ ["Category",...keys.map(k=>careers[k].title)].forEach(textValue=>{
+  const th=document.createElement("th");th.textContent=textValue;row.appendChild(th);
+ });
+ head.appendChild(row);table.appendChild(head);
+ const body=document.createElement("tbody");
+ const rows=[
+  ["Education",k=>careers[k].education],
+  ["Career pathway",k=>careers[k].route],
+  ["Approximate timeline",k=>careers[k].time],
+  ["Indicative earnings",k=>careers[k].salary],
+  ["Important note",k=>careers[k].salaryNote]
+ ];
+ rows.forEach(([label,getValue])=>{
+  const tr=document.createElement("tr");
+  const th=document.createElement("th");th.textContent=label;tr.appendChild(th);
+  keys.forEach(k=>{const td=document.createElement("td");td.textContent=getValue(k);tr.appendChild(td)});
+  body.appendChild(tr);
+ });
+ table.appendChild(body);output.appendChild(table);
+}
+
+// CHATBOT FUNCTIONS
+function toggleChat(forceOpen){
+ const panel=document.getElementById("chatWindow");
+ const launcher=document.getElementById("chatLauncher");
+ const open=typeof forceOpen==="boolean"?forceOpen:panel.classList.contains("hidden");
+ panel.classList.toggle("hidden",!open);
+ launcher.setAttribute("aria-expanded",open?"true":"false");
+ if(open)document.getElementById("chatInput").focus();
+}
+
+function addChatMessage(message,sender){
+ const box=document.getElementById("chatMessages");
+ const bubble=document.createElement("div");
+ bubble.className="chat-message "+sender;
+ bubble.textContent=message;
+ box.appendChild(bubble);
+ box.scrollTop=box.scrollHeight;
+}
+
+function askSuggestion(message){
+ document.getElementById("chatInput").value=message;
+ document.getElementById("chatForm").requestSubmit();
+}
+
+function getCareerReply(message){
+ const text=message.toLowerCase().trim();
+ const has=(...words)=>words.some(word=>text.includes(word));
+
+ if(has("hello","hi","hey","namaste","नमस्ते","हii"))
+  return "Hello! 👋 Welcome to CareerKhoj. Aap Army, Law, coding, salaries ya career roadmaps ke baare mein pooch sakte ho.";
+
+ if(has("army","defence","defense","nda","soldier","सेना","आर्मी"))
+  return "🪖 DEFENCE CAREER\n\n• NDA is one officer-entry route after Class 12 for eligible candidates.\n• Entry requirements include age, education, selection and medical standards.\n• Check the latest notification before applying.\n\nOfficial source: https://www.joinindianarmy.nic.in/";
+
+ if(has("lawyer","law","legal","clat","वकील","कानून"))
+  return "⚖️ LAW CAREER\n\n• A five-year integrated law degree after Class 12 is one common route.\n• Some institutions use entrance exams such as CLAT.\n• Admission and professional requirements vary.\n\nCLAT: https://consortiumofnlus.ac.in/\nBar examination: https://www.allindiabarexamination.com/";
+
+ if(has("coding","programming","software","website","html","developer","कोडिंग"))
+  return "💻 CODING ROADMAP\n\n1. Learn HTML and CSS.\n2. Learn JavaScript.\n3. Build small projects.\n4. Learn Git and debugging.\n5. Build a portfolio and explore internships or junior roles.\n\nKeep improving CareerKhoj as a real project!";
+
+ if(has("compare","comparison","difference"," vs ","versus","तुलना"))
+  return "📊 You can compare careers in the Career Comparison section. Check education, exams, daily work, earning variability and eligibility. Which two careers would you like to explore?";
+
+ if(has("salary","income","earn","earning","package","pay","कमाई","वेतन","सैलरी"))
+  return "💰 Salary varies by role, employer, experience and location. Government roles follow applicable pay rules; private salaries vary, and freelance income is not guaranteed. Use the Career Comparison section for indicative ranges and verify current figures.";
+
+ if(has("class 12","12th","class 10","10th","student","college","12वीं","बारहवीं"))
+  return "🎓 STUDENT GUIDANCE\n\n1. Identify subjects you enjoy.\n2. Shortlist three or four careers.\n3. Check eligibility and entrance exams.\n4. Compare study costs and job options.\n5. Discuss major decisions with a trusted teacher or guardian.\n\nTry the Career Quiz above!";
+
+ if(has("roadmap","how to become","kaise bane","कैसे बनें","steps","path"))
+  return "🗺️ CAREER ROADMAP\n\n1. Understand the profession.\n2. Check eligibility.\n3. Identify education and exams.\n4. Prepare relevant skills.\n5. Verify current official requirements.\n\nChoose a career in the Roadmap section for more guidance.";
+
+ if(has("are you ai","real ai","tum ai ho"))
+  return "I'm currently a basic rule-based chatbot, not a real AI model. I use predefined guidance and keyword matching. A real AI assistant would require an AI service and a secure backend.";
+
+ return "Thanks for your question! 😊 I currently provide basic guidance about Army, Law, coding, career roadmaps and salary comparisons. Try asking: 'Army career roadmap' or 'How can I become a lawyer?'";
+}
+
+document.getElementById("chatForm").addEventListener("submit",function(event){
+ event.preventDefault();
+ const input=document.getElementById("chatInput");
+ const message=input.value.trim();
+ if(!message)return;
+ addChatMessage(message,"user");
+ input.value="";
+ addChatMessage(getCareerReply(message),"bot");
+});
+
+document.getElementById("roadmapCareer").addEventListener("change",renderRoadmap);
+
+fillCareerSelect("careerOne","army");
+fillCareerSelect("careerTwo","law");
+renderQuestion();
+renderRoadmap();
+compareCareers();
+</script>
+</body>
+</html>
